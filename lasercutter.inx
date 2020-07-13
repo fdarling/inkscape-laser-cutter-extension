@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension>
+    <name>Laser Cutter G-Code Exporter</name>
+    <id>com.turnkey.Tyranny2</id>
+    <dependency type="executable" location="extensions">lasercutter.py</dependency>
+    <dependency type="executable" location="extensions">inkex.py</dependency>
+    <effect>
+        <object-type>path</object-type>
+        <effects-menu>
+            <submenu _name="Export"/>
+        </effects-menu>
+    </effect>
+    <param name="tab" type="notebook">
+        <page name='helptab' _gui-text='Help'>
+            <_param name="fullhelp" type="description">This Inkscape extension exports vectors and images to G-code compatible with several different open source electronics that can drive laser engravers/cutters.
+
+Using the layer names you're able to specify the laser power, feedrate, rapid feedrate (to reduce vibrations in some cases), DPI (rastering rows per inch), and number of passes. We currently do not support 'ppm' (pulses per millimeter).
+
+1) Name your layer like the following example:
+"35 [feed=600]"
+Or using all of the options:
+"100 [rapid=2000,feed=600,dpi=200,passes=3]"
+2) Draw your designs and group them based on lasing options in the layer name. The layers are engraved in drawing order with the bottom layer being drawn first.
+3) If specific objects are selected when you open this extension, only they will be exported. If nothing is selected, it defaults to exporting everything.
+
+"100" means cut with a laser power of 100%. It'll be scaled to the appropriate G-code units based off the "Mainboard" setting
+"feed=600" means cut with a feedrate of 600 mm/inches per minute
+"rapid=2000" means make movements between cuts speed of 2000 mm/inches per minute
+"dpi=200" means step down by 1/200th to raster a row of an image. This means that for low resolution images there are multiple "raster rows" for a single pixel row, and for very high resolution images it might be the opposite case.
+"passes=3" means repeat the entire layer's operation an additional 2 times after the initial pass. It repeats on a layer basis and not on an object basis to allow maximum cooling time.
+
+If you do not specify the laser power or other options in the layer name, then they will default to the options set in the "Preferences" tab.</_param>
+        </page>
+        <page name='outputtab' _gui-text='Output Options'>
+            <param name="mainboard" type="enum" _gui-text="Mainboard: ">
+                <item value="marlin">Marlin</item>
+                <item value="smoothie">Smoothieware</item>
+                <item value="grbl">GRBL</item>
+                <item value="linuxcnc">LinuxCNC</item>
+            </param>
+            <param name="homebefore" type="boolean" _gui-text="Home At Beginning:">true</param>
+            <param name="homeafter" type="boolean" _gui-text="Home At End:">true</param>
+            <param name="draw-curves" type="boolean" _gui-text="DEBUG: show engraving paths in Inkscape">true</param>
+            <param name="unit" type="enum" _gui-text="G-Code Output Units: ">
+                <item value="mm">mm</item>
+                <item value="in">in</item>
+            </param>
+            <_param name="help" type="description" appearance="header">GRBL/LinuxCNC specific options:</_param>
+            <param name="spindle-min" type="int" min="0" max="20000" _gui-text="Spindle RPM @ 0% Laser Power:">0</param>
+            <param name="spindle-max" type="int" min="0" max="20000" _gui-text="Spindle RPM @ 100% Laser Power:">14000</param>
+        </page>
+        <page name='preferencestab' _gui-text='Preferences'>
+            <param name="filename" type="string" _gui-text="File name: ">output.g</param>
+            <param name="directory" type="string" _gui-text="Directory: "></param>
+            <_param name="help" type="description">(blank is your desktop)</_param>
+            <param name="dpi" type="int" min="0" max="1200" _gui-text="Default DPI:">300</param>
+            <param name="Mfeed" type="int" min="0" max="10000" _gui-text="Default Rapid Feedrate:">2000</param>
+            <param name="feed" type="int" min="0" max="10000" _gui-text="Default Cut Feedrate:">300</param>
+            <param name="laser" type="int" min="0" max="100" _gui-text="Default Laser Intensity (0-100%):">10</param>
+            <param name="passes" type="int" min="1" max="10000" _gui-text="Default Laser Passes:">1</param>
+        </page>
+    </param>
+    <script>
+        <command reldir="extensions" interpreter="python">lasercutter.py</command>
+    </script>
+</inkscape-extension>
