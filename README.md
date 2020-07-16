@@ -3,7 +3,7 @@
 Inkscape extension to export G-code compatible with open source laser cutters/engravers. It currently supports the following target platforms:
 
 * [Marlin](https://marlinfw.org/)
-* [Smoothieware](http://smoothieware.org/) (including [Cohesion3D](https://cohesion3d.com/ boards)
+* [Smoothieware](http://smoothieware.org/) including [Cohesion3D](https://cohesion3d.com/) boards
 * [GRBL](https://github.com/gnea/grbl)
 * [LinuxCNC](https://linuxcnc.org/)
 
