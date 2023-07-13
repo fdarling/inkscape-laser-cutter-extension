@@ -112,7 +112,7 @@ def csplength(csp):
 
 
 ###
-###        Distance calculattion from point to arc
+###        Distance calculation from point to arc
 ###
 
 def between(c,x,y):
@@ -896,7 +896,10 @@ class LaserCutterGcodeExportEffect(inkex.Effect):
                             newPathParsed += biarc(sp1,sp2,0,0)
                         newPathParsed.append([[subpath[-1][1][0], subpath[-1][1][1]], 'end', 0, 0])
                     ###########################
-                    post.writeComment("path for object id=" + operation['id'])
+                    idString = operation['id']
+                    if not idString:
+                        idString = ''
+                    post.writeComment("path for object id=" + idString)
                     for i in range(1,len(newPathParsed)):
                         s, si = newPathParsed[i-1], newPathParsed[i]
                         #G00 : Move with the laser off to a new point
