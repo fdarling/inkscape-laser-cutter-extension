@@ -76,7 +76,7 @@ class P:
     def angle(self): return math.atan2(self.y, self.x)
     def __repr__(self): return '%f,%f' % (self.x, self.y)
     def pr(self): return "%.2f,%.2f" % (self.x, self.y)
-    def to_list(self): return [self.x, self.y]    
+    def to_list(self): return [self.x, self.y]
 
 
 ###
@@ -90,15 +90,15 @@ def csp_at_t(sp1,sp2,t):
 def cspbezsplit(sp1, sp2, t = 0.5):
     s1,s2 = bezmisc.beziersplitatt((sp1[1],sp1[2],sp2[0],sp2[1]),t)
     return [ [sp1[0][:], sp1[1][:], list(s1[1])], [list(s1[2]), list(s1[3]), list(s2[1])], [list(s2[2]), sp2[1][:], sp2[2][:]] ]
-    
+
 def cspbezsplitatlength(sp1, sp2, l = 0.5, tolerance = 0.01):
     bez = (sp1[1][:],sp1[2][:],sp2[0][:],sp2[1][:])
     t = bezmisc.beziertatlength(bez, l, tolerance)
-    return cspbezsplit(sp1, sp2, t)    
-    
+    return cspbezsplit(sp1, sp2, t)
+
 def cspseglength(sp1,sp2, tolerance = 0.001):
     bez = (sp1[1][:],sp1[2][:],sp2[0][:],sp2[1][:])
-    return bezmisc.bezierlength(bez, tolerance)    
+    return bezmisc.bezierlength(bez, tolerance)
 
 def csplength(csp):
     total = 0
@@ -107,12 +107,12 @@ def csplength(csp):
         for i in xrange(1,len(sp)):
             l = cspseglength(sp[i-1],sp[i])
             lengths.append(l)
-            total += l            
+            total += l
     return lengths, total
 
 
 ###
-###        Distance calculation from point to arc
+###        Distance calculattion from point to arc
 ###
 
 def between(c,x,y):
@@ -126,14 +126,14 @@ def distance_from_point_to_arc(p, arc):
     if r>0 :
         i = c + (p-c).unit()*r
         alpha = ((i-c).angle() - (P0-c).angle())
-        if a*alpha<0: 
+        if a*alpha<0:
             if alpha>0:    alpha = alpha-2*math.pi
             else: alpha = 2*math.pi+alpha
-        if between(alpha,0,a) or min(abs(alpha),abs(alpha-a))<STRAIGHT_TOLERANCE : 
+        if between(alpha,0,a) or min(abs(alpha),abs(alpha-a))<STRAIGHT_TOLERANCE :
             return (p-i).mag(), [i.x, i.y]
-        else : 
+        else :
             d1, d2 = (p-P0).mag(), (p-P2).mag()
-            if d1<d2 : 
+            if d1<d2 :
                 return (d1, [P0.x,P0.y])
             else :
                 return (d2, [P2.x,P2.y])
@@ -143,10 +143,10 @@ def get_distance_from_csp_to_arc(sp1,sp2, arc1, arc2, tolerance = 0.001 ): # arc
     d, d1, dl = (0,(0,0)), (0,(0,0)), 0
     while i<1 or (abs(d1[0]-dl[0])>tolerance and i<2):
         i += 1
-        dl = d1*1    
+        dl = d1*1
         for j in range(n+1):
             t = float(j)/n
-            p = csp_at_t(sp1,sp2,t) 
+            p = csp_at_t(sp1,sp2,t)
             d = min(distance_from_point_to_arc(p,arc1), distance_from_point_to_arc(p,arc2))
             d1 = max(d1,d)
         n=n*2
@@ -163,7 +163,7 @@ def get_distance_from_csp_to_arc(sp1,sp2, arc1, arc2, tolerance = 0.001 ): # arc
 
 
 def biarc(sp1, sp2, z1, z2, depth=0,):
-    def biarc_split(sp1,sp2, z1, z2, depth): 
+    def biarc_split(sp1,sp2, z1, z2, depth):
         if depth<turnkeyoptions.biarc_max_split_depth:
             sp1,sp2,sp3 = cspbezsplit(sp1,sp2)
             l1, l2 = cspseglength(sp1,sp2), cspseglength(sp2,sp3)
@@ -175,7 +175,7 @@ def biarc(sp1, sp2, z1, z2, depth=0,):
     P0, P4 = P(sp1[1]), P(sp2[1])
     TS, TE, v = (P(sp1[2])-P0), -(P(sp2[0])-P4), P0 - P4
     tsa, tea, va = TS.angle(), TE.angle(), v.angle()
-    if TE.mag()<STRAIGHT_DISTANCE_TOLERANCE and TS.mag()<STRAIGHT_DISTANCE_TOLERANCE:    
+    if TE.mag()<STRAIGHT_DISTANCE_TOLERANCE and TS.mag()<STRAIGHT_DISTANCE_TOLERANCE:
         # Both tangents are zerro - line straight
         return [ [sp1[1],'line', 0, 0, sp2[1], [z1,z2]] ]
     if TE.mag() < STRAIGHT_DISTANCE_TOLERANCE:
@@ -184,11 +184,11 @@ def biarc(sp1, sp2, z1, z2, depth=0,):
     elif TS.mag() < STRAIGHT_DISTANCE_TOLERANCE:
         TS = -(TE+v).unit()
         r = 1/( TE.mag()/v.mag()*2 )
-    else:    
+    else:
         r=TS.mag()/TE.mag()
     TS, TE = TS.unit(), TE.unit()
     tang_are_parallel = ((tsa-tea)%math.pi<STRAIGHT_TOLERANCE or math.pi-(tsa-tea)%math.pi<STRAIGHT_TOLERANCE )
-    if ( tang_are_parallel  and 
+    if ( tang_are_parallel  and
                 ((v.mag()<STRAIGHT_DISTANCE_TOLERANCE or TE.mag()<STRAIGHT_DISTANCE_TOLERANCE or TS.mag()<STRAIGHT_DISTANCE_TOLERANCE) or
                     1-abs(TS*v/(TS.mag()*v.mag()))<STRAIGHT_TOLERANCE)    ):
                 # Both tangents are parallel and start and end are the same - line straight
@@ -200,10 +200,10 @@ def biarc(sp1, sp2, z1, z2, depth=0,):
     c,b,a = v*v, 2*v*(r*TS+TE), 2*r*(TS*TE-1)
     if v.mag()==0:
         return biarc_split(sp1, sp2, z1, z2, depth)
-    asmall, bsmall, csmall = abs(a)<10**-10,abs(b)<10**-10,abs(c)<10**-10 
+    asmall, bsmall, csmall = abs(a)<10**-10,abs(b)<10**-10,abs(c)<10**-10
     if         asmall and b!=0:    beta = -c/b
-    elif     csmall and a!=0:    beta = -b/a 
-    elif not asmall:     
+    elif     csmall and a!=0:    beta = -b/a
+    elif not asmall:
         discr = b*b-4*a*c
         if discr < 0:    raise ValueError, (a,b,c,discr)
         disq = discr**.5
@@ -211,10 +211,10 @@ def biarc(sp1, sp2, z1, z2, depth=0,):
         beta2 = (-b + disq) / 2 / a
         if beta1*beta2 > 0 :    raise ValueError, (a,b,c,disq,beta1,beta2)
         beta = max(beta1, beta2)
-    elif    asmall and bsmall:    
+    elif    asmall and bsmall:
         return biarc_split(sp1, sp2, z1, z2, depth)
     alpha = beta * r
-    ab = alpha + beta 
+    ab = alpha + beta
     P1 = P0 + alpha * TS
     P3 = P4 - beta * TE
     P2 = (beta / ab)  * P1 + (alpha / ab) * P3
@@ -224,22 +224,22 @@ def biarc(sp1, sp2, z1, z2, depth=0,):
         if (D-P1).mag()==0: return None, None
         R = D - ( (D-P0).mag()**2/(D-P1).mag() )*(P1-D).unit()
         p0a, p1a, p2a = (P0-R).angle()%(2*math.pi), (P1-R).angle()%(2*math.pi), (P2-R).angle()%(2*math.pi)
-        alpha =  (p2a - p0a) % (2*math.pi)                    
-        if (p0a<p2a and  (p1a<p0a or p2a<p1a))    or    (p2a<p1a<p0a) : 
-            alpha = -2*math.pi+alpha 
+        alpha =  (p2a - p0a) % (2*math.pi)
+        if (p0a<p2a and  (p1a<p0a or p2a<p1a))    or    (p2a<p1a<p0a) :
+            alpha = -2*math.pi+alpha
         if abs(R.x)>1000000 or abs(R.y)>1000000  or (R-P0).mag<turnkeyoptions.min_arc_radius :
             return None, None
-        else :    
+        else :
             return  R, alpha
     R1,a1 = calculate_arc_params(P0,P1,P2)
     R2,a2 = calculate_arc_params(P2,P3,P4)
     if R1==None or R2==None or (R1-P0).mag()<STRAIGHT_TOLERANCE or (R2-P2).mag()<STRAIGHT_TOLERANCE    : return [ [sp1[1],'line', 0, 0, sp2[1], [z1,z2]] ]
-    
+
     d = get_distance_from_csp_to_arc(sp1,sp2, [P0,P2,R1,a1],[P2,P4,R2,a2])
     if d > turnkeyoptions.biarc_tolerance and depth<turnkeyoptions.biarc_max_split_depth     : return biarc_split(sp1, sp2, z1, z2, depth)
     else:
         if R2.mag()*a2 == 0 : zm = z2
-        else : zm  = z1 + (z2-z1)*(R1.mag()*a1)/(R2.mag()*a2+R1.mag()*a1)  
+        else : zm  = z1 + (z2-z1)*(R1.mag()*a1)/(R2.mag()*a2+R1.mag()*a1)
         return [    [ sp1[1], 'arc', [R1.x,R1.y], a1, [P2.x,P2.y], [z1,zm] ], [ [P2.x,P2.y], 'arc', [R2.x,R2.y], a2, [P4.x,P4.y], [zm,z2] ]        ]
 
 ################################################
@@ -413,7 +413,7 @@ class GRBLPost(GenericPost):
             powerRatio = 0.0
         elif powerRatio > 1.0:
             powerRatio = 1.0
-        
+
         self.spindleSpeed.set(GRBLPost.SPINDLE_MIN + float(powerRatio)*(GRBLPost.SPINDLE_MAX - GRBLPost.SPINDLE_MIN))
 
     def _WriteSpindleLine(self, enabled):
